@@ -1,16 +1,23 @@
-const Builder = @import("std").build.Builder;
+const std = @import("std");
 
-pub fn build(b: *Builder) void {
-    const mode = b.standardReleaseOptions();
-    const lib = b.addStaticLibrary("graph", "src/graph.zig");
-    lib.setBuildMode(mode);
+pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
-    var main_tests = b.addTest("src/graph.zig");
-    main_tests.setBuildMode(mode);
+    // Module
+    _ = b.addModule("zig-graph", .{
+        .root_source_file = b.path("src/root.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
 
-    const test_step = b.step("test", "Run library tests");
-    test_step.dependOn(&main_tests.step);
-
-    b.default_step.dependOn(&lib.step);
-    b.installArtifact(lib);
+    // Unit tests
+    const unit_tests = b.addTest(.{
+        .root_source_file = b.path("src/root.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    const run_unit_tests = b.addRunArtifact(unit_tests);
+    const test_step = b.step("test", "Run unit tests");
+    test_step.dependOn(&run_unit_tests.step);
 }
