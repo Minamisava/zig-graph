@@ -109,7 +109,8 @@ fn stronglyConnectedStep(
     if (idx == minIdx) {
         var scc = std.ArrayList(u64).init(allocator);
         while (true) {
-            const v = acc.pop();
+            const v_opt = acc.pop();
+            const v = if (v_opt) |vv| vv else unreachable;
             scc.append(v) catch unreachable;
             if (v == current) {
                 break;
@@ -160,7 +161,7 @@ pub const sccAcc = struct {
         return idx;
     }
 
-    pub fn pop(self: *Self) u64 {
+    pub fn pop(self: *Self) ?u64 {
         return self.stack.pop();
     }
 

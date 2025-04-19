@@ -18,9 +18,6 @@ pub fn DirectedGraph(
     comptime T: type,
     comptime Context: type,
 ) type {
-    // This verifies the context has the correct functions (hash and eql)
-    comptime hash_map.verifyContext(Context, T, T, u64, false);
-
     // The adjacency list type is used to map all edges in the graph.
     // The key is the source node. The value is a map where the key is
     // target node and the value is the edge weight.
@@ -343,7 +340,7 @@ pub fn DirectedGraph(
 
                 // Advance to the next value
                 it.current = null;
-                while (it.stack.popOrNull()) |nextVal| {
+                while (it.stack.pop()) |nextVal| {
                     if (!it.visited.contains(nextVal)) {
                         it.current = nextVal;
                         break;
